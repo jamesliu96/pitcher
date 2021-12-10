@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "noImplicitAny": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "rootDir": "src",
+    "outDir": "build"
+  },
+  "include": ["src"]
+}
