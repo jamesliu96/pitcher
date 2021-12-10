@@ -1,6 +1,6 @@
-# chime
+# pitcher
 
-[ring](https://jamesliu.info/chime)
+[listen](https://jamesliu.info/pitcher)
 
 ## install dependencies
 
