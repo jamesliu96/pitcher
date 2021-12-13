@@ -12,12 +12,19 @@
         id="volume_meter"
         low="0.05"
         high="0.25"
-        style="width: 400px"
-      ></meter>
-      <canvas id="graph_f" style="background-color: green"></canvas>
-      <br />
+        style="width: 800px"
+      ></meter
+      ><br />
+      <canvas id="graph_f" style="background-color: green"></canvas><br />
       <canvas
         id="graph_t"
+        style="background-color: green; transform: scaleY(-1)"
+      ></canvas
+      ><br />
+      <canvas id="graph_output_f" style="background-color: green"></canvas
+      ><br />
+      <canvas
+        id="graph_output_t"
         style="background-color: green; transform: scaleY(-1)"
       ></canvas>
       <div>
@@ -25,8 +32,8 @@
         <span id="octave"></span>
         <span id="node_frequency"></span>
         <span id="deviation"></span>
+        <span id="frequency"></span>
       </div>
-      <div id="frequency"></div>
     </div>
     <script type="module" src="build/main.js"></script>
   </body>
