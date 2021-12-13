@@ -60,3 +60,9 @@ export const autoCorrelate = (buffer, sampleRate) => {
     const b = (x3 - x1) / 2;
     return sampleRate / (a ? T0 - b / (2 * a) : T0);
 };
+export const meanAmplitude = (buffer) => {
+    let sum = 0;
+    for (const amplitude of buffer)
+        sum += amplitude ** 2;
+    return Math.sqrt(sum / buffer.length);
+};
