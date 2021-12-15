@@ -1,17 +1,19 @@
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const A440 = 440;
-const MIDI = 69;
+const A440_MIDI = 69;
 const A = 2 ** (1 / 12);
 const C0 = 16.35;
 export const getDataFromFrequency = (frequency) => {
     const N = Math.round(12 * Math.log2(frequency / A440));
     const noteFrequency = A440 * A ** N;
+    const note = NOTES[(N + A440_MIDI) % NOTES.length];
+    const deviation = frequency - noteFrequency;
     const octave = Math.floor(Math.log2(noteFrequency / C0));
     return {
         frequency,
         noteFrequency,
-        note: NOTES[(N + MIDI) % NOTES.length],
-        deviation: frequency - noteFrequency,
+        note,
+        deviation,
         octave,
     };
 };
@@ -22,43 +24,42 @@ export const autoCorrelate = (buffer, sampleRate) => {
     const THRES = 0.2;
     let r1 = 0;
     let r2 = buffer.length - 1;
-    for (let i = 0; i < buffer.length / 2; ++i) {
+    for (let i = 0; i < buffer.length / 2; i++) {
         if (Math.abs(buffer[i]) < THRES) {
             r1 = i;
             break;
         }
     }
-    for (let i = 1; i < buffer.length / 2; ++i) {
+    for (let i = 1; i < buffer.length / 2; i++) {
         if (Math.abs(buffer[buffer.length - i]) < THRES) {
             r2 = buffer.length - i;
             break;
         }
     }
-    const buf2 = buffer.slice(r1, r2);
-    const c = new Array(buf2.length).fill(0);
-    for (let i = 0; i < buf2.length; ++i) {
-        for (let j = 0; j < buf2.length - i; ++j) {
-            c[i] = c[i] + buf2[j] * buf2[j + i];
+    const buf = buffer.slice(r1, r2);
+    const c = new Array(buf.length).fill(0);
+    for (let i = 0; i < buf.length; ++i) {
+        for (let j = 0; j < buf.length - i; ++j) {
+            c[i] = c[i] + buf[j] * buf[j + i];
         }
     }
     let d = 0;
-    for (; c[d] > c[d + 1]; ++d)
+    for (; c[d] > c[d + 1]; d++)
         ;
     let maxval = -1;
     let maxpos = -1;
-    for (let i = d; i < buf2.length; ++i) {
+    for (let i = d; i < buf.length; i++) {
         if (c[i] > maxval) {
             maxval = c[i];
             maxpos = i;
         }
     }
-    const T0 = maxpos;
-    const x1 = c[T0 - 1];
-    const x2 = c[T0];
-    const x3 = c[T0 + 1];
+    const x1 = c[maxpos - 1];
+    const x2 = c[maxpos];
+    const x3 = c[maxpos + 1];
     const a = (x1 + x3 - 2 * x2) / 2;
     const b = (x3 - x1) / 2;
-    return sampleRate / (a ? T0 - b / (2 * a) : T0);
+    return sampleRate / (a ? maxpos - b / (2 * a) : maxpos);
 };
 export const meanAmplitude = (buffer) => {
     let sum = 0;
