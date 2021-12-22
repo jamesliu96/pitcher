@@ -87,6 +87,11 @@ window.addEventListener('load', () => {
       oscillator.connect(outputAnalyser);
       outputAnalyser.connect(audioContext.destination);
       oscillator.start();
+      let thres = 0;
+      $graphOT.addEventListener('click', ({ offsetX }) => {
+        const x = Math.max(0, Math.min(offsetX, WIDTH)) * devicePixelRatio;
+        thres = (x / w) * (audioContext.sampleRate / 2);
+      });
       const loop = () => {
         const buffer = new Float32Array(inputAnalyser.fftSize);
         inputAnalyser.getFloatTimeDomainData(buffer);
@@ -103,7 +108,11 @@ window.addEventListener('load', () => {
           $octave.textContent = `${octave}`;
           $deviation.textContent =
             deviation >= 1 ? '[+]' : deviation <= -1 ? '[-]' : '[*]';
-          oscillator.frequency.value = noteFrequency;
+          oscillator.frequency.value = thres
+            ? noteFrequency > thres
+              ? 0
+              : noteFrequency
+            : noteFrequency;
         } else {
           oscillator.frequency.value = 0;
         }
@@ -203,14 +212,47 @@ window.addEventListener('load', () => {
             else ctxOT.moveTo(x, y);
           });
           ctxOT.stroke();
-          if (stable) {
-            ctxOT.strokeStyle = 'yellow';
+          if (thres) {
+            ctxOT.strokeStyle = 'maroon';
             ctxOT.lineWidth = 3 * devicePixelRatio;
             ctxOT.beginPath();
-            const x = (noteFrequency / (audioContext.sampleRate / 2)) * w;
+            const x = (thres / (audioContext.sampleRate / 2)) * w;
             ctxOT.moveTo(x, 0);
             ctxOT.lineTo(x, h);
             ctxOT.stroke();
+          }
+          if (stable) {
+            if (thres) {
+              if (noteFrequency <= thres) {
+                ctxOT.strokeStyle = 'yellow';
+                ctxOT.lineWidth = 3 * devicePixelRatio;
+                ctxOT.beginPath();
+                const x =
+                  (oscillator.frequency.value / (audioContext.sampleRate / 2)) *
+                  w;
+                ctxOT.moveTo(x, 0);
+                ctxOT.lineTo(x, h);
+                ctxOT.stroke();
+              } else {
+                ctxOT.strokeStyle = 'olive';
+                ctxOT.lineWidth = 3 * devicePixelRatio;
+                ctxOT.beginPath();
+                const x = (noteFrequency / (audioContext.sampleRate / 2)) * w;
+                ctxOT.moveTo(x, 0);
+                ctxOT.lineTo(x, h);
+                ctxOT.stroke();
+              }
+            } else {
+              ctxOT.strokeStyle = 'yellow';
+              ctxOT.lineWidth = 3 * devicePixelRatio;
+              ctxOT.beginPath();
+              const x =
+                (oscillator.frequency.value / (audioContext.sampleRate / 2)) *
+                w;
+              ctxOT.moveTo(x, 0);
+              ctxOT.lineTo(x, h);
+              ctxOT.stroke();
+            }
           }
         }
         requestAnimationFrame(loop);
