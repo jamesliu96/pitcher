@@ -6,7 +6,7 @@ const A = 2 ** (1 / 12);
 const C0 = 16.35;
 
 export const getDataFromFrequency = (frequency: number) => {
-  const N = Math.round(12 * Math.log2(frequency / A440));
+  const N = Math.round(NOTES.length * Math.log2(frequency / A440));
 
   const noteFrequency = A440 * A ** N;
   const note = NOTES[(N + A440_MIDI) % NOTES.length];
