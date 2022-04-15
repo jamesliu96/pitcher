@@ -2,7 +2,7 @@ const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 const A440 = 440;
 const A440_MIDI = 69;
-const A = 2 ** (1 / 12);
+const A = 2 ** (1 / NOTES.length);
 const C0 = 16.35;
 
 export const getDataFromFrequency = (frequency: number) => {
